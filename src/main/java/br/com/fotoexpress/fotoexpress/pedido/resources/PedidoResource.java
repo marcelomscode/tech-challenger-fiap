@@ -1,19 +1,28 @@
 package br.com.fotoexpress.fotoexpress.pedido.resources;
 
+import br.com.fotoexpress.fotoexpress.pedido.model.Pacote;
+import br.com.fotoexpress.fotoexpress.pedido.model.dto.PacoteDTO;
+import br.com.fotoexpress.fotoexpress.pedido.services.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/pedidos")
 @Slf4j
 public class PedidoResource {
+
+    @Autowired
+    PedidoService pedidoService;
 
     @GetMapping
     @Operation(summary = "Busca todos os pedidos de fotos com todos os status", description = "Todos os status dos pedidos de fotos serão exibidos nesse endpoint",
@@ -23,13 +32,12 @@ public class PedidoResource {
         return "OK podemos comecar os pedidos";
     }
 
-    @GetMapping("/pacotes")
-    @Operation(summary = "Lista os pacotes disponiveis", description = "Lista de pacotes de fotos que podem ser comercializados",
+    @GetMapping("/pacotes-disponiveis")
+    @Operation(summary = "Lista os pacotes de fotos disponiveis", description = "Lista de pacotes de fotos que podem ser comercializados",
             responses = @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = String.class))}))
-    public ResponseEntity<String> buscaPacotesDisponiveis() {
+    public ResponseEntity<List<PacoteDTO>> buscaPacotesDisponiveis() {
         log.info("Inicio de listar pacotes disponiveis");
-
-        return ResponseEntity.ok("Listando os pacotes disponiveis");
+        return ResponseEntity.ok(pedidoService.buscaPacotesDisponiveis());
     }
 
 }
