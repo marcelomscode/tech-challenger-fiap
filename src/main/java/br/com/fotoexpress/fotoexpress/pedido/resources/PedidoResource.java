@@ -29,7 +29,7 @@ public class PedidoResource {
     public ResponseEntity<String> buscaPacotesDisponiveis() {
         log.info("Inicio de listar pacotes disponiveis");
 
-        return ResponseEntity.ok("Listando os pacotes");
+        return ResponseEntity.ok("Listando os pacotes disponiveis");
     }
 
 }
