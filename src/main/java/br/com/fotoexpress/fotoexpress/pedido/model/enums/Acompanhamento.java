@@ -28,7 +28,7 @@ public enum Acompanhamento {
         return id;
     }
 
-    public static Acompanhamento getById(int id) {
+    public static Acompanhamento getById(Long id) {
         for (Acompanhamento acompanhamento : values()) {
             if (acompanhamento.id == id) {
                 return acompanhamento;
@@ -37,7 +37,7 @@ public enum Acompanhamento {
         throw new IllegalArgumentException("Id inválido para Acompanhamento: " + id);
     }
 
-    public static String getDescricaoById(int id) {
+    public static String getDescricaoById(Long id) {
         Acompanhamento acompanhamento = getById(id);
         return acompanhamento.getDescricao();
     }

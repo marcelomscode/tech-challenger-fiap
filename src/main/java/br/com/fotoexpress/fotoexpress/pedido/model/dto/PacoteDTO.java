@@ -9,7 +9,7 @@ import lombok.Setter;
 @Builder
 public class PacoteDTO {
 
-    private int id;
+    private Long id;
     private String nome;
     private String acompanhamento;
     private String descricao;

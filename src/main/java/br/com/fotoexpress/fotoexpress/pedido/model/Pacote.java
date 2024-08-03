@@ -1,7 +1,13 @@
 package br.com.fotoexpress.fotoexpress.pedido.model;
 
+
+import jakarta.persistence.*;
 import lombok.*;
 
+
+
+@Entity
+@Table(name = "pacote", schema = "fotoexpress")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -9,9 +15,12 @@ import lombok.*;
 @Builder
 public class Pacote {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
     private String nome;
-    private int acompanhamento;
+    private String acompanhamento;
     private String descricao;
     private double valor;
 

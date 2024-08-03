@@ -29,12 +29,10 @@ public class PacoteMapper {
                 .builder()
                 .id(pacoteDTO.getId())
                 .nome(pacoteDTO.getNome())
-                .acompanhamento(Acompanhamento.getIdbyDescricao(pacoteDTO.getDescricao()))
+                .acompanhamento(pacoteDTO.getAcompanhamento())
                 .descricao(pacoteDTO.getDescricao())
                 .valor(pacoteDTO.getValor())
                 .build();
     }
-
-
 
 }
