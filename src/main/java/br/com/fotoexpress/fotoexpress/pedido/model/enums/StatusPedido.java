@@ -2,10 +2,11 @@ package br.com.fotoexpress.fotoexpress.pedido.model.enums;
 
 public enum StatusPedido {
 
-    EM_ANDAMENTO (1,"Em andamento"),
-    CONCLUIDO (2,"Concluído"),
-    CANCELADO (3,"Cancelado")
-            ;
+    EM_ANDAMENTO (0,"Em andamento"),
+    AGENDADO(1, "Agendado"),
+    CANCELADO (2,"Cancelado"),
+    CONCLUIDO (3,"Concluído")
+    ;
 
     private final int id;
     private final String descricao;

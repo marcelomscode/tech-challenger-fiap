@@ -24,9 +24,21 @@ public class PacotesService {
 
         List<PacoteDTO> pacoteDTO = pacotes
                 .stream()
-                .map(PacoteMapper.builder().build()::getPacoteDTO )
+                .map(PacoteMapper.builder().build()::getPacoteDTO)
                 .collect(Collectors.toList());
         return pacoteDTO;
+    }
+
+    public List<PacoteDTO> buscaListaPacotesPorId(List<Integer> ids) {
+
+        List<Pacote> pacotes = pacoteRepository.buscaListasPacotePorId(ids);
+
+        List<PacoteDTO> pacotesDTO = pacotes
+                .stream()
+                .map(PacoteMapper.builder().build()::getPacoteDTO)
+                .collect(Collectors.toList());
+
+        return pacotesDTO;
     }
 
 

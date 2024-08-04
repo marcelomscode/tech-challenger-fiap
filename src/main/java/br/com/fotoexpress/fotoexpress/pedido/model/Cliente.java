@@ -21,8 +21,8 @@ public class Cliente {
     String telefone;
     String cpf;
 
-    @OneToMany(mappedBy = "cliente")
-    private Set<Pedido> pedidos = new HashSet<>();
+//    @OneToMany(mappedBy = "cliente")
+//    private Set<Pedido> pedidos = new HashSet<>();
 
 
 }

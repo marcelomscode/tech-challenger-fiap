@@ -22,12 +22,18 @@ public class Pedido {
     private Long id;
     private LocalDateTime dataPedido;
     private StatusPedido status;
+    private double desconto;
+    private double valor;
+    private String idContrato;
 
-    @OneToMany
+    @ManyToMany
+    @JoinTable(name = "pedido_pacotes",
+            joinColumns = @JoinColumn(name = "id_pedido"),
+            inverseJoinColumns = @JoinColumn(name = "id_pacote"))
     private List<Pacote> pacotes;
 
     @ManyToOne
+    @JoinColumn(name = "id_cliente")
     private Cliente cliente;
-
 
 }
