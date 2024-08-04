@@ -3,8 +3,6 @@ package br.com.fotoexpress.fotoexpress.pedido.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.*;
-
 @Entity
 @Table(name= "cliente",schema = "fotoexpress")
 @Getter
@@ -20,9 +18,5 @@ public class Cliente {
     String email;
     String telefone;
     String cpf;
-
-//    @OneToMany(mappedBy = "cliente")
-//    private Set<Pedido> pedidos = new HashSet<>();
-
 
 }

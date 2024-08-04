@@ -2,7 +2,9 @@ package br.com.fotoexpress.fotoexpress.pedido.resources;
 
 import br.com.fotoexpress.fotoexpress.pedido.model.Pedido;
 import br.com.fotoexpress.fotoexpress.pedido.model.dto.PacoteDTO;
-import br.com.fotoexpress.fotoexpress.pedido.model.dto.PedidoDTO;
+import br.com.fotoexpress.fotoexpress.pedido.model.dto.PedidoRequest;
+import br.com.fotoexpress.fotoexpress.pedido.model.dto.PedidoResponse;
+import br.com.fotoexpress.fotoexpress.pedido.model.enums.StatusPedido;
 import br.com.fotoexpress.fotoexpress.pedido.services.PacotesService;
 import br.com.fotoexpress.fotoexpress.pedido.services.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,7 +36,7 @@ public class PedidoResource {
     @GetMapping()
     @Operation(summary = "Busca todos os pedidos cadastrados", description = "Busca uma listagem de pedidos ja cadastrados",
             responses = @ApiResponse(responseCode = "200", description = "Ok", content = {@Content(schema = @Schema(implementation = Pedido.class))}))
-    public ResponseEntity<List<Pedido>> listaPedidosCadastrados() {
+    public ResponseEntity<List<PedidoResponse>> listaPedidosCadastrados() {
 
         log.info("Inicio busca Pedidos");
         var pedidosCadastrados = pedidoService.buscaPedidosCadastrados();
@@ -42,7 +44,6 @@ public class PedidoResource {
 
         return ResponseEntity.ok(pedidosCadastrados);
     }
-
 
     @GetMapping("/pacotes-disponiveis")
     @Operation(summary = "Lista os pacotes de fotos disponiveis", description = "Lista de pacotes de fotos que podem ser comercializados",
@@ -59,19 +60,15 @@ public class PedidoResource {
     @PostMapping
     @Operation(summary = "Cadastra um novo pedido", description = "Cadastra um novo pedido",
             responses = @ApiResponse(responseCode = "201", description = "Created", content = {@Content(schema = @Schema(implementation = String.class))}))
-    public ResponseEntity<Pedido> cadastraNovoPedido(
-            @RequestBody PedidoDTO pedidoDTO) {
+    public ResponseEntity<String> cadastraNovoPedido(
+            @RequestBody PedidoRequest request) {
 
-        log.info("Cadastrando novo pedido para o cliente: {}", pedidoDTO.getIdCliente());
-        log.info("Com o valor de desconto: {}", pedidoDTO.getDesconto());
+        log.info("Cadastrando novo pedido para o cliente: {}", request.getIdCliente());
+        pedidoService.salvaPedido((request));
+        log.info("Pedido cadastrado com sucesso, status do pedido: {}", StatusPedido.EM_ANDAMENTO);
 
-         var pedido =pedidoService.salvaPedido((pedidoDTO));
-
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(pedido);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Pedido Cadastrado com Sucesso");
     }
-
-
 
 
 }

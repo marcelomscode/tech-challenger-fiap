@@ -3,9 +3,11 @@ package br.com.fotoexpress.fotoexpress.pedido.services;
 import br.com.fotoexpress.fotoexpress.pedido.model.Cliente;
 import br.com.fotoexpress.fotoexpress.pedido.model.Pedido;
 import br.com.fotoexpress.fotoexpress.pedido.model.dto.PacoteDTO;
-import br.com.fotoexpress.fotoexpress.pedido.model.dto.PedidoDTO;
+import br.com.fotoexpress.fotoexpress.pedido.model.dto.PedidoRequest;
+import br.com.fotoexpress.fotoexpress.pedido.model.dto.PedidoResponse;
 import br.com.fotoexpress.fotoexpress.pedido.model.enums.StatusPedido;
 import br.com.fotoexpress.fotoexpress.pedido.model.mappers.PacoteMapper;
+import br.com.fotoexpress.fotoexpress.pedido.model.mappers.PedidoResponseMapper;
 import br.com.fotoexpress.fotoexpress.pedido.repository.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,14 +32,20 @@ public class PedidoService {
         this.pedidoRepository = pedidoRepository;
     }
 
-    public List<Pedido> buscaPedidosCadastrados() {
+    public List<PedidoResponse> buscaPedidosCadastrados() {
         List<Pedido> pedidos = pedidoRepository.findAll();
-        return pedidos;
+
+        List<PedidoResponse> pedidosDTO = pedidos
+                .stream()
+                .map(PedidoResponseMapper.builder().build()::getPedidoDTO)
+                .collect(Collectors.toList());
+
+        return pedidosDTO;
     }
 
-    public Pedido salvaPedido(PedidoDTO pedidoDTO) {
+    public void salvaPedido(PedidoRequest pedidoDTO) {
 
-        List<PacoteDTO> pacotes = pacotesService.buscaListaPacotesPorId(pedidoDTO.getPacotes());
+        List<PacoteDTO> pacotes = pacotesService.buscaListaPacotesPorId(pedidoDTO.getIdPacotes());
 
         Cliente cliente = clienteService.buscaClientePorId(pedidoDTO.getIdCliente());
 
@@ -55,11 +63,10 @@ public class PedidoService {
                 .desconto(pedidoDTO.getDesconto())
                 .build();
         try {
-            pedido = pedidoRepository.save(pedido);
+            pedidoRepository.save(pedido);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return pedido;
     }
 }
