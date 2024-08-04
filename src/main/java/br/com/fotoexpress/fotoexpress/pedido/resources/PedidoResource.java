@@ -70,5 +70,4 @@ public class PedidoResource {
         return ResponseEntity.status(HttpStatus.CREATED).body("Pedido Cadastrado com Sucesso");
     }
 
-
 }
