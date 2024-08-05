@@ -11,7 +11,7 @@ public class Pacote {
 
     private int id;
     private String nome;
-    private int acompanhamento;
+    private String acompanhamento;
     private String descricao;
     private double valor;
 

@@ -28,8 +28,8 @@ public class PedidoService {
         var pacote1 = Pacote
                 .builder()
                 .id(1)
-                .nome("Fidelidade")
-                .acompanhamento(Acompanhamento.MENSAL.getId())
+                .nome("Fidelidade Mensal")
+                .acompanhamento("Acompanhamento mês a mês")
                 .descricao("Consiste em fotografar bebês até um ano para registros do crescimento mês a mês.")
                 .valor(1000.00)
                 .build();
@@ -37,8 +37,8 @@ public class PedidoService {
         var pacote2 = Pacote
                 .builder()
                 .id(2)
-                .nome("Fidelidade")
-                .acompanhamento(Acompanhamento.BIMESTRAL.getId())
+                .nome("Fidelidade Bimestral")
+                .acompanhamento("Acompanhamento bimestral")
                 .descricao("Consiste em fotografar bebês com a periodicidade de dois meses.")
                 .valor(1000.00)
                 .build();
@@ -46,8 +46,8 @@ public class PedidoService {
         var pacote3 = Pacote
                 .builder()
                 .id(3)
-                .nome("Fidelidade")
-                .acompanhamento(Acompanhamento.TRIMESTRAL.getId())
+                .nome("Fidelidade Trimestral")
+                .acompanhamento("Acompanhamento trimestral")
                 .descricao("Consiste em fotografar bebês com a periodicidade de três meses.")
                 .valor(1000.00)
                 .build();
@@ -56,7 +56,7 @@ public class PedidoService {
                 .builder()
                 .id(4)
                 .nome("Gestante")
-                .acompanhamento(Acompanhamento.GESTANTE.getId())
+                .acompanhamento("Acompanhamento gestante até o nascimento")
                 .descricao("Acompanhamento mês a mês até o nascimento.")
                 .valor(100.00)
                 .build();
@@ -65,7 +65,7 @@ public class PedidoService {
                 .builder()
                 .id(5)
                 .nome("Sem Fidelidade")
-                .acompanhamento(Acompanhamento.AVULSOS.getId())
+                .acompanhamento("Ensaios avulsos")
                 .descricao("Pacote para as mães que não desejam ter a fidelidade do estúdio.")
                 .valor(100.00)
                 .build();
@@ -74,7 +74,7 @@ public class PedidoService {
                 .builder()
                 .id(6)
                 .nome("Extras")
-                .acompanhamento(Acompanhamento.FAMILIA.getId())
+                .acompanhamento("Pacote participação da família, podendo ser pais ou irmãos.")
                 .descricao("Consiste na realização do ensaio com os membros da família.")
                 .valor(50.00)
                 .build();
@@ -83,7 +83,7 @@ public class PedidoService {
                 .builder()
                 .id(7)
                 .nome("Extras")
-                .acompanhamento(Acompanhamento.FAMILIAINDIVIDUAL.getId())
+                .acompanhamento("Participação de familiar individual")
                 .descricao("Consiste em incluir familiar individualmente pelo custo de R$ 50,00 cada.")
                 .valor(50.00)
                 .build();

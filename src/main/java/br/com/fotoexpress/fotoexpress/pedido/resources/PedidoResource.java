@@ -1,6 +1,7 @@
 package br.com.fotoexpress.fotoexpress.pedido.resources;
 
 import br.com.fotoexpress.fotoexpress.pedido.model.Pacote;
+import br.com.fotoexpress.fotoexpress.pedido.model.Pedido;
 import br.com.fotoexpress.fotoexpress.pedido.model.dto.PacoteDTO;
 import br.com.fotoexpress.fotoexpress.pedido.services.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +41,15 @@ public class PedidoResource {
     public ResponseEntity<List<PacoteDTO>> buscaPacotesDisponiveis() {
         log.info("Inicio de listar pacotes disponiveis");
         return ResponseEntity.ok(pedidoService.buscaPacotesDisponiveis());
+    }
+
+    @PostMapping()
+    public ResponseEntity<Pedido> salvaNovoPedido(@RequestBody Pedido pedido){
+
+
+///        pedido.setPacotes();
+
+        return ResponseEntity.status (201).build();
     }
 
 }
