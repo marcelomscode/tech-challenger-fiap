@@ -1,16 +1,15 @@
 package br.com.fotoexpress.pedido.repository;
 
 import br.com.fotoexpress.pedido.model.Pacote;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 public interface PacoteRepository extends JpaRepository<Pacote, Long> {
 
-    @Query("select p from Pacote p where p.id in :ids")
-    List<Pacote> buscaListasPacotePorId(List<Integer> ids);
-
+  @Query("SELECT p FROM Pacote p WHERE p.id IN :ids")
+  List<Pacote> findByIds(@Param("ids") List<Integer> ids);
 }

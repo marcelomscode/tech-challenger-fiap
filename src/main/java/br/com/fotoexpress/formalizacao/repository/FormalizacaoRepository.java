@@ -9,9 +9,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FormalizacaoRepository extends JpaRepository<Formalizacao, Long> {
 
-    @Query("select f from Formalizacao f where f.pedido.id = :pedidoId")
-    Formalizacao buscaFormalizacaoPorPedidoId(@Param("pedidoId") Long pedidoId);
+  @Query("SELECT f FROM Formalizacao f WHERE f.pedido.id = :pedidoId")
+  Formalizacao findByPedidoId(@Param("pedidoId") Long pedidoId);
 
-    @Query("select f from Formalizacao f where f.contratoId = :contratoId")
-    Formalizacao buscaFormalizacaoPorContratoId(@Param("contratoId") String contratoId);
+  @Query("SELECT f FROM Formalizacao f WHERE f.contratoId = :contratoId")
+  Formalizacao findByContratoId(@Param("contratoId") String contratoId);
 }

@@ -1,58 +1,73 @@
 package br.com.fotoexpress.pedido.resources;
 
-import br.com.fotoexpress.pedido.model.Cliente;
+import br.com.fotoexpress.pedido.model.dto.ClienteDTO;
+import br.com.fotoexpress.pedido.model.dto.ClienteRequest;
 import br.com.fotoexpress.pedido.services.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/clientes")
-@Slf4j
+@RequiredArgsConstructor
 public class ClienteResource {
 
-    private final ClienteService clienteService;
+  private final ClienteService clienteService;
 
-    @Autowired
-    public ClienteResource(ClienteService clienteService) {
-        this.clienteService = clienteService;
-    }
+  @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+      summary = "Busca todos os clientes cadastrados",
+      description = "Busca uma listagem de clientes ja cadastrados",
+      responses =
+          @ApiResponse(
+              responseCode = "200",
+              description = "Ok",
+              content = {@Content(schema = @Schema(implementation = ClienteDTO.class))}))
+  public ResponseEntity<Page<ClienteDTO>> findAll(@PageableDefault Pageable pageable) {
+    return ResponseEntity.ok(clienteService.findAll(pageable));
+  }
 
+  @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ClienteDTO> findById(@PathVariable Long id) {
+    return ResponseEntity.ok(clienteService.findById(id));
+  }
 
-    @GetMapping
-    @Operation(summary = "Busca todos os clientes cadastrados", description = "Busca uma listagem de clientes ja cadastrados",
-            responses = @ApiResponse(responseCode = "200",
-                    description = "Ok",
-                    content = {@Content(schema = @Schema(implementation = Cliente.class))}))
-    public ResponseEntity<List<Cliente>> listaClientesCadastrados() {
+  @PostMapping(
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  @Operation(
+      summary = "Cadastra um novo cliente",
+      description = "Cadastra um novo cliente",
+      responses =
+          @ApiResponse(
+              responseCode = "201",
+              description = "Ok",
+              content = {@Content(schema = @Schema(implementation = ClienteDTO.class))}))
+  public ResponseEntity<ClienteDTO> create(@RequestBody ClienteDTO dto) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(clienteService.create(dto));
+  }
 
-        log.info("Inicio busca Clientes");
-        var clientesCadastrados = clienteService.buscaListadeClientes();
-        log.info("Fim busca Clientes");
+  @PutMapping(
+      value = "/{id}",
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ClienteDTO> update(
+      @PathVariable Long id, @RequestBody ClienteRequest clienteRequest) {
+    return ResponseEntity.ok(clienteService.update(id, clienteRequest));
+  }
 
-        return ResponseEntity.ok(clientesCadastrados);
-    }
-
-    @PostMapping
-    @Operation(summary = "Cadastra um novo cliente", description = "Cadastra um novo cliente",
-            responses = @ApiResponse(responseCode = "201",
-                    description = "Ok",
-                    content = {@Content(schema = @Schema(implementation = Cliente.class))}))
-    public ResponseEntity<String> salvaCliente(@RequestBody Cliente cliente) {
-
-        log.info("Cadastrando novo cliente");
-        clienteService.salvaCliente(cliente);
-        log.info("Cliente cadastrado com sucesso, {}", cliente.getNome());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body ("Novo Cliente salvo com sucesso.");
-    }
-
+  @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
+    clienteService.delete(id);
+    return ResponseEntity.noContent().build();
+  }
 }
