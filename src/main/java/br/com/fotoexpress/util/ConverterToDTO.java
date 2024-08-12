@@ -27,7 +27,4 @@ public class ConverterToDTO {
   public PacoteDTO toDto(final Pacote model) {
     return modelMapper.map(model, PacoteDTO.class);
   }
-
-
-
 }

@@ -5,96 +5,96 @@ import com.docusign.esign.client.ApiClient;
 import com.docusign.esign.client.ApiException;
 import com.docusign.esign.client.auth.OAuth;
 import com.docusign.esign.model.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Base64;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DocuSignService {
-    @Value("${docusign.integrationKey}")
-    private String integrationKey;
 
-    @Value("${docusign.userId}")
-    private String userId;
+  @Value("${docusign.integrationKey}")
+  private String integrationKey;
 
-    @Value("${docusign.apiBaseUrl}")
-    private String apiBaseUrl;
+  @Value("${docusign.userId}")
+  private String userId;
 
-    @Value("${docusign.accountId}")
-    private String accountId;
+  @Value("${docusign.apiBaseUrl}")
+  private String apiBaseUrl;
 
-    @Value("${docusign.assinaturaContratoURL}")
-    private String assinaturaContratoURL;
+  @Value("${docusign.accountId}")
+  private String accountId;
 
-    private ApiClient apiClient;
+  @Value("${docusign.assinaturaContratoURL}")
+  private String assinaturaContratoURL;
 
-    public void init() throws ApiException, IOException {
+  private ApiClient apiClient;
 
-        apiClient = new ApiClient(apiBaseUrl);
+  private void init() throws ApiException, IOException {
+    apiClient = new ApiClient(apiBaseUrl);
 
-        ClassPathResource classPathResource = new ClassPathResource("privateKey.txt");
-        Path privateKey = classPathResource.getFile().toPath();
+    ClassPathResource classPathResource = new ClassPathResource("privateKey.txt");
+    Path privateKey = classPathResource.getFile().toPath();
 
-        byte[] privateKeyBytes = Files.readAllBytes(privateKey);
-        OAuth.OAuthToken oAuthToken = apiClient.requestJWTUserToken(integrationKey, userId, Arrays.asList(OAuth.Scope_SIGNATURE), privateKeyBytes, 3600);
-        apiClient.setAccessToken(oAuthToken.getAccessToken(), oAuthToken.getExpiresIn());
-    }
+    byte[] privateKeyBytes = Files.readAllBytes(privateKey);
+    OAuth.OAuthToken oAuthToken =
+        apiClient.requestJWTUserToken(
+            integrationKey, userId, Arrays.asList(OAuth.Scope_SIGNATURE), privateKeyBytes, 3600);
 
-    public String sendEnvelope(String signerEmail, String signerName, byte[] documentBytes) throws ApiException, IOException {
-        init();
+    apiClient.setAccessToken(oAuthToken.getAccessToken(), oAuthToken.getExpiresIn());
+  }
 
-        EnvelopeDefinition envelopeDefinition = new EnvelopeDefinition();
-        envelopeDefinition.setEmailSubject("Please sign this document");
+  public String sendEnvelope(String signerEmail, String signerName, byte[] documentBytes)
+      throws ApiException, IOException {
+    init();
 
-        Document document = new Document();
-        document.setDocumentBase64(Base64.getEncoder().encodeToString(documentBytes));
-        document.setName("Example Document");
-        document.setFileExtension("pdf");
-        document.setDocumentId("1");
+    EnvelopeDefinition envelopeDefinition = new EnvelopeDefinition();
+    envelopeDefinition.setEmailSubject("Please sign this document");
 
-        envelopeDefinition.setDocuments(Arrays.asList(document));
+    Document document = new Document();
+    document.setDocumentBase64(Base64.getEncoder().encodeToString(documentBytes));
+    document.setName("Example Document");
+    document.setFileExtension("pdf");
+    document.setDocumentId("1");
 
-        Signer signer = new Signer();
-        signer.setEmail(signerEmail);
-        signer.setName(signerName);
-        signer.setRecipientId("1");
+    envelopeDefinition.setDocuments(Arrays.asList(document));
 
-        SignHere signHere = new SignHere();
-        signHere.setAnchorString("/sn1/");
-        signHere.setAnchorYOffset("10");
-        signHere.setAnchorUnits("pixels");
-        signHere.setAnchorXOffset("20");
+    Signer signer = new Signer();
+    signer.setEmail(signerEmail);
+    signer.setName(signerName);
+    signer.setRecipientId("1");
 
-        Tabs tabs = new Tabs();
-        tabs.setSignHereTabs(Arrays.asList(signHere));
-        signer.setTabs(tabs);
+    SignHere signHere = new SignHere();
+    signHere.setAnchorString("/sn1/");
+    signHere.setAnchorYOffset("10");
+    signHere.setAnchorUnits("pixels");
+    signHere.setAnchorXOffset("20");
 
-        Recipients recipients = new Recipients();
-        recipients.setSigners(Arrays.asList(signer));
-        envelopeDefinition.setRecipients(recipients);
+    Tabs tabs = new Tabs();
+    tabs.setSignHereTabs(Arrays.asList(signHere));
+    signer.setTabs(tabs);
 
-        envelopeDefinition.setStatus("sent");
+    Recipients recipients = new Recipients();
+    recipients.setSigners(Arrays.asList(signer));
+    envelopeDefinition.setRecipients(recipients);
 
-        EventNotification eventNotification = new EventNotification();
-        eventNotification.setUrl(assinaturaContratoURL);
-        eventNotification.setLoggingEnabled("true");
-        EnvelopeEvent completedEvent = new EnvelopeEvent();
-        completedEvent.setEnvelopeEventStatusCode("completed");
-        eventNotification.setEnvelopeEvents(Arrays.asList(completedEvent));
+    envelopeDefinition.setStatus("sent");
 
-        envelopeDefinition.setEventNotification(eventNotification);
+    EventNotification eventNotification = new EventNotification();
+    eventNotification.setUrl(assinaturaContratoURL);
+    eventNotification.setLoggingEnabled("true");
+    EnvelopeEvent completedEvent = new EnvelopeEvent();
+    completedEvent.setEnvelopeEventStatusCode("completed");
+    eventNotification.setEnvelopeEvents(Arrays.asList(completedEvent));
 
-        EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);
-        EnvelopeSummary envelopeSummary = envelopesApi.createEnvelope(accountId, envelopeDefinition);
-        return envelopeSummary.getEnvelopeId();
-    }
+    envelopeDefinition.setEventNotification(eventNotification);
+
+    EnvelopesApi envelopesApi = new EnvelopesApi(apiClient);
+    EnvelopeSummary envelopeSummary = envelopesApi.createEnvelope(accountId, envelopeDefinition);
+    return envelopeSummary.getEnvelopeId();
+  }
 }

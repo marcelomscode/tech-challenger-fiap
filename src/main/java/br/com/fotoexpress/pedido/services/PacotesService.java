@@ -27,7 +27,7 @@ public class PacotesService {
   }
 
   public List<PacoteDTO> findAllById(List<Integer> ids) {
-    return pacoteRepository.buscaListasPacotePorId(ids).stream()
+    return pacoteRepository.findByIds(ids).stream()
         .map(converterToDTO::toDto)
         .collect(Collectors.toList());
   }

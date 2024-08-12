@@ -25,11 +25,11 @@ public class FormalizacaoService {
   private final ContratoPDFService contratoPDFService;
   private final PedidoService pedidoService;
 
-  public FormalizacaoDTO save(FormalizacaoRequestDTO formalizacaoRequestDTO)
+  public FormalizacaoDTO create(FormalizacaoRequestDTO formalizacaoRequestDTO)
       throws IOException, ApiException {
     try {
       Formalizacao formalizacaoExistente =
-          formalizacaoRepository.buscaFormalizacaoPorPedidoId(formalizacaoRequestDTO.pedidoId());
+          formalizacaoRepository.findByPedidoId(formalizacaoRequestDTO.pedidoId());
 
       if (formalizacaoExistente != null) {
         throw new RuntimeException("O pedido já possui uma formalização.");
@@ -68,14 +68,16 @@ public class FormalizacaoService {
     }
   }
 
-  public FormalizacaoDTO assinarContrato(DocusignRequestDTO docuSignRequestDTO) {
+  public FormalizacaoDTO signContract(DocusignRequestDTO docuSignRequestDTO) {
     try {
       Formalizacao formalizacao =
-          formalizacaoRepository.buscaFormalizacaoPorContratoId(docuSignRequestDTO.envelopeId());
+          formalizacaoRepository.findByContratoId(docuSignRequestDTO.envelopeId());
+
       if (formalizacao == null) {
         throw new FormalizacaoException(
             "Não foi encontrado uma formalização para este contrato.", HttpStatus.NOT_FOUND);
       }
+
       formalizacao.assinarContrato();
       formalizacaoRepository.save(formalizacao);
       pedidoService.changeOrderStatus(
@@ -101,6 +103,7 @@ public class FormalizacaoService {
 
   private Formalizacao toFormalizacao(FormalizacaoDTO formalizacaoDTO) {
     Pedido pedido = pedidoService.findById(formalizacaoDTO.pedidoId());
+
     return new Formalizacao(
         formalizacaoDTO.id(),
         formalizacaoDTO.dataFormalizacao(),

@@ -1,7 +1,6 @@
 package br.com.fotoexpress.formalizacao.dto;
 
 import br.com.fotoexpress.formalizacao.domain.enums.StatusFormalizacao;
-
 import java.time.LocalDateTime;
 
 public record FormalizacaoDTO(
