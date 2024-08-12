@@ -9,7 +9,10 @@ import br.com.fotoexpress.pedido.model.dto.PedidoResponse;
 import br.com.fotoexpress.pedido.model.enums.StatusPedido;
 import br.com.fotoexpress.pedido.model.mappers.PacoteMapper;
 import br.com.fotoexpress.pedido.model.mappers.PedidoResponseMapper;
+import br.com.fotoexpress.pedido.repository.ClienteRepository;
 import br.com.fotoexpress.pedido.repository.PedidoRepository;
+import jakarta.ws.rs.NotFoundException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,20 +24,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class PedidoService {
 
-    private PacotesService pacotesService;
-    private ClienteService clienteService;
-    private PedidoRepository pedidoRepository;
-
-    @Autowired
-    public PedidoService(PacotesService pacotesService,
-                         ClienteService clienteService,
-                         PedidoRepository pedidoRepository) {
-        this.pacotesService = pacotesService;
-        this.clienteService = clienteService;
-        this.pedidoRepository = pedidoRepository;
-    }
+    private final PacotesService pacotesService;
+    private final PedidoRepository pedidoRepository;
+    private final ClienteRepository clienteRepository;
 
     public List<PedidoResponse> buscaPedidosCadastrados() {
         List<Pedido> pedidos = pedidoRepository.findAll();
@@ -49,7 +44,10 @@ public class PedidoService {
 
         List<PacoteDTO> pacotes = pacotesService.buscaListaPacotesPorId(pedidoDTO.getIdPacotes());
 
-        Cliente cliente = clienteService.buscaClientePorId(pedidoDTO.getIdCliente());
+    Cliente cliente =
+        clienteRepository
+            .findById(pedidoDTO.getIdCliente())
+            .orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
 
         Pedido pedido = Pedido
                 .builder()

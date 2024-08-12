@@ -1,31 +1,68 @@
 package br.com.fotoexpress.pedido.services;
 
+import br.com.fotoexpress.dto.ClienteDTO;
+import br.com.fotoexpress.dto.ClienteForm;
 import br.com.fotoexpress.pedido.model.Cliente;
 import br.com.fotoexpress.pedido.repository.ClienteRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.com.fotoexpress.util.ConverterToDTO;
+import jakarta.ws.rs.NotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
+@Transactional
 public class ClienteService {
 
-    private ClienteRepository clienteRepository;
+  private final ClienteRepository clienteRepository;
+  private final ConverterToDTO converterToDTO;
 
-    @Autowired
-    public ClienteService(ClienteRepository clienteRepository) {
-        this.clienteRepository = clienteRepository;
-    }
+  @Transactional(readOnly = true)
+  public ClienteDTO findById(Long id) {
+    return clienteRepository
+        .findById(id)
+        .map(converterToDTO::toDto)
+        .orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
+  }
 
-    public Cliente buscaClientePorId(Long id) {
-        return clienteRepository.findById(id).orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
-    }
+  @Transactional(readOnly = true)
+  public Page<ClienteDTO> findAll(Pageable pageable) {
+    log.info("Buscando todos os clientes");
+    return clienteRepository.findAll(pageable).map(converterToDTO::toDto);
+  }
 
-    public List<Cliente> buscaListadeClientes() {
-        return clienteRepository.findAll();
-    }
+  public ClienteDTO create(ClienteDTO dto) {
+    Cliente cliente =
+        Cliente.builder()
+            .cpf(dto.cpf())
+            .email(dto.email())
+            .telefone(dto.telefone())
+            .nome(dto.nome())
+            .build();
 
-    public void salvaCliente(Cliente cliente) {
-        clienteRepository.save(cliente);
-    }
+    return converterToDTO.toDto(clienteRepository.save(cliente));
+  }
+
+  public ClienteDTO update(Long id, ClienteForm clienteForm) {
+    Cliente cliente =
+        clienteRepository
+            .findById(id)
+            .orElseThrow(() -> new NotFoundException("Cliente não encontrado"));
+
+    cliente.setCpf(clienteForm.cpf());
+    cliente.setEmail(clienteForm.email());
+    cliente.setTelefone(clienteForm.telefone());
+    cliente.setNome(clienteForm.nome());
+
+    return converterToDTO.toDto(clienteRepository.save(cliente));
+  }
+
+  public void delete(Long id) {
+    clienteRepository.deleteById(id);
+  }
 }
