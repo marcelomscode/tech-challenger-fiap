@@ -1,6 +1,6 @@
 package br.com.fotoexpress.formalizacao.resources;
 
-import br.com.fotoexpress.formalizacao.dto.DocuSignRequestDTO;
+import br.com.fotoexpress.formalizacao.dto.DocusignRequestDTO;
 import br.com.fotoexpress.formalizacao.dto.FormalizacaoDTO;
 import br.com.fotoexpress.formalizacao.dto.FormalizacaoRequestDTO;
 import br.com.fotoexpress.formalizacao.service.FormalizacaoService;
@@ -36,7 +36,7 @@ public class FormalizacaoResource {
     }
 
     @PostMapping("contrato-assinado")
-    public ResponseEntity<FormalizacaoDTO> assinarContrato(@RequestBody DocuSignRequestDTO docuSignRequestDTO) {
+    public ResponseEntity<FormalizacaoDTO> assinarContrato(@RequestBody DocusignRequestDTO docuSignRequestDTO) {
         FormalizacaoDTO formalizacaoDTO = formalizacaoService.assinarContrato(docuSignRequestDTO);
         return  ResponseEntity.status(HttpStatusCode.valueOf(200)).body(formalizacaoDTO);
     }

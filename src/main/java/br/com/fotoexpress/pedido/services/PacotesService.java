@@ -1,45 +1,34 @@
 package br.com.fotoexpress.pedido.services;
 
-import br.com.fotoexpress.pedido.model.Pacote;
 import br.com.fotoexpress.pedido.model.dto.PacoteDTO;
-import br.com.fotoexpress.pedido.model.mappers.PacoteMapper;
 import br.com.fotoexpress.pedido.repository.PacoteRepository;
-import org.springframework.stereotype.Service;
-
+import br.com.fotoexpress.util.ConverterToDTO;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PacotesService {
 
+  private final PacoteRepository pacoteRepository;
+  private final ConverterToDTO converterToDTO;
 
-    private PacoteRepository pacoteRepository;
+  @Autowired
+  public PacotesService(PacoteRepository pacoteRepository, ConverterToDTO converterToDTO) {
+    this.pacoteRepository = pacoteRepository;
+    this.converterToDTO = converterToDTO;
+  }
 
-    public PacotesService(PacoteRepository pacoteRepository) {
-        this.pacoteRepository = pacoteRepository;
-    }
+  public Page<PacoteDTO> findAll(Pageable pageable) {
+    return pacoteRepository.findAll(pageable).map(converterToDTO::toDto);
+  }
 
-    public List<PacoteDTO> buscaTodosPacotesDisponiveis() {
-        List<Pacote> pacotes = pacoteRepository.findAll();
-
-        List<PacoteDTO> pacoteDTO = pacotes
-                .stream()
-                .map(PacoteMapper.builder().build()::getPacoteDTO)
-                .collect(Collectors.toList());
-        return pacoteDTO;
-    }
-
-    public List<PacoteDTO> buscaListaPacotesPorId(List<Integer> ids) {
-
-        List<Pacote> pacotes = pacoteRepository.buscaListasPacotePorId(ids);
-
-        List<PacoteDTO> pacotesDTO = pacotes
-                .stream()
-                .map(PacoteMapper.builder().build()::getPacoteDTO)
-                .collect(Collectors.toList());
-
-        return pacotesDTO;
-    }
-
-
+  public List<PacoteDTO> findAllById(List<Integer> ids) {
+    return pacoteRepository.buscaListasPacotePorId(ids).stream()
+        .map(converterToDTO::toDto)
+        .collect(Collectors.toList());
+  }
 }
